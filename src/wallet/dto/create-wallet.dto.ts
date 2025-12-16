@@ -1,9 +1,18 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+const CURRENCIES = ['USD'];
 
 export class CreateWalletDto {
-  @IsEnum(['USD', 'EUR', 'GBP'], {
-    message: 'Currency must be USD, EUR, or GBP',
+  @ApiProperty({
+    description: 'Currency code for the wallet',
+    example: 'USD',
+    enum: CURRENCIES,
+    default: 'USD',
+    required: true,
   })
+  @IsString()
   @IsNotEmpty()
+  @IsIn(CURRENCIES)
   currency: string;
 }
