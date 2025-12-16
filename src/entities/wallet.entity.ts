@@ -21,22 +21,19 @@ export class Wallet {
   @Column({ type: 'decimal', precision: 15, scale: 2, default: 0 })
   balance: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.wallets)
   user: User;
 
-  @Column()
-  userId: string;
-
   @OneToMany(() => Transaction, (transaction) => transaction.wallet)
   transactions: Transaction[];
 
-  //   constructor(partial: Partial<Wallet>) {
-  //     Object.assign(this, partial);
-  //   }
+  constructor(partial: Partial<Wallet>) {
+    Object.assign(this, partial);
+  }
 }

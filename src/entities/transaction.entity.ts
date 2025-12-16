@@ -21,7 +21,7 @@ export class Transaction {
   @Column({ type: 'decimal', precision: 15, scale: 2 })
   amount: number;
 
-  @Column({ type: 'decimal', precision: 15, scale: 2 })
+  @Column({ type: 'decimal', precision: 15, scale: 2, name: 'balance_after' })
   balanceAfter: number;
 
   @Column({ type: 'enum', enum: TransactionType })
@@ -31,25 +31,24 @@ export class Transaction {
   description: string;
 
   @Column({ nullable: true })
-  reference: string; // For external references
+  reference: string;
 
-  @Column({ nullable: true })
-  relatedWalletId: string; // For transfers between wallets
+  @Column({ nullable: true, name: 'related_wallet_id' })
+  relatedWalletId: string;
 
-  @Column({ nullable: true, unique: true })
+  @Column({ nullable: true, name: 'idempotency_key' })
   idempotencyKey: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  // Relationships
   @ManyToOne(() => Wallet, (wallet) => wallet.transactions)
   wallet: Wallet;
 
-  @Column()
+  @Column({ name: 'wallet_id' })
   walletId: string;
 
-  //   constructor(partial: Partial<Transaction>) {
-  //     Object.assign(this, partial);
-  //   }
+  constructor(partial: Partial<Transaction>) {
+    Object.assign(this, partial);
+  }
 }

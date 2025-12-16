@@ -4,6 +4,7 @@ import {
   NotFoundException,
   ConflictException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -20,13 +21,13 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(dto: CreateUserDto): Promise<User> {
+  async create(dto: CreateUserDto) {
     const existingUser = await this.userRepository.findOne({
       where: { username: dto.username },
     });
 
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new BadRequestException('user already exists');
     }
 
     const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
@@ -37,17 +38,27 @@ export class UserService {
         password: hashedPassword,
       });
 
-      return await this.userRepository.save(user);
+      await this.userRepository.save(user);
+
+      return user;
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException('Email already registered');
+        throw new BadRequestException('user already exists');
       }
       throw new InternalServerErrorException();
     }
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { username } });
+    // return this.userRepository.findOne({ where: { username } });
+
+    const user = await this.userRepository.findOne({ where: { username } });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user;
   }
 
   async findById(id: string): Promise<User> {
