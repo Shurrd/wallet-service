@@ -1,4 +1,3 @@
-// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -10,7 +9,6 @@ dotenv.config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -18,10 +16,8 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
   app.enableCors();
 
-  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Wallet Service API')
     .setDescription('A secure wallet management system')

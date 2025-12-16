@@ -1,4 +1,3 @@
-// src/user/user.service.ts
 import {
   Injectable,
   NotFoundException,
@@ -50,8 +49,6 @@ export class UserService {
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    // return this.userRepository.findOne({ where: { username } });
-
     const user = await this.userRepository.findOne({ where: { username } });
 
     if (!user) {

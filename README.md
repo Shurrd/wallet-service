@@ -1,98 +1,331 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 💰 Wallet Management Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A production-ready wallet management system built with NestJS that provides secure multi-currency wallet operations, fund transfers, and transaction management with JWT authentication.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
-## Description
+## 📋 Table of Contents
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Architecture](#-architecture)
+- [Getting Started](#-getting-started)
+- [API Documentation](#-api-documentation)
+- [Database Schema](#-database-schema)
+- [Security](#-security)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Production Considerations](#-production-considerations)
 
-## Project setup
+## ✨ Features
 
-```bash
-$ npm install
+### Core Functionality
+
+- ✅ **User Authentication** - JWT-based registration and login with bcrypt password hashing
+- ✅ **Wallet Operations** - Create, fund, withdraw, and query wallets
+- ✅ **Secure Transfers** - Atomic wallet-to-wallet transfers with pessimistic locking
+- ✅ **Transaction History** - Complete audit trail with balance tracking
+- ✅ **Idempotency** - Prevent duplicate operations using unique keys
+- ✅ **Input Validation** - Comprehensive request validation using class-validator
+- ✅ **Error Handling** - Meaningful error responses with proper HTTP status codes
+
+### Security Features
+
+- 🔐 JWT token-based authentication
+- 🔒 Password hashing with bcrypt (10 salt rounds)
+- 🛡️ Route guards protecting wallet endpoints
+- 🔑 User-based wallet ownership validation
+- 🚫 SQL injection prevention via TypeORM
+- 🔍 Input sanitization and validation
+
+### Advanced Features
+
+- 💾 Pessimistic locking for concurrent operations
+- 🔄 Database transactions for atomic operations
+- 📊 Comprehensive transaction auditing
+- 🎯 One wallet per currency per user constraint
+- 📝 Auto-generated transaction references
+- 🔔 Balance tracking before and after operations
+
+## 🛠️ Technology Stack
+
+| Technology            | Purpose                             |
+| --------------------- | ----------------------------------- |
+| **NestJS**            | Backend framework with TypeScript   |
+| **TypeORM**           | Database ORM with entity management |
+| **MySQL**             | Primary relational database         |
+| **JWT**               | Secure authentication tokens        |
+| **Passport.js**       | Authentication middleware           |
+| **bcrypt**            | Password hashing algorithm          |
+| **class-validator**   | DTO validation                      |
+| **class-transformer** | Object transformation               |
+| **Swagger**           | API documentation                   |
+
+## 🏗️ Architecture
+
+### Project Structure
+
+```
+src/
+├── auth/                           # Authentication module
+│   ├── dto/
+│   │   ├── register.dto.ts        # Registration validation
+│   │   └── login.dto.ts           # Login validation
+│   ├── strategies/
+│   │   └── jwt.strategy.ts        # JWT validation strategy
+│   ├── guards/
+│   │   └── jwt-auth.guard.ts      # Route protection
+│   ├── decorators/
+│   │   └── get-user.decorator.ts  # Extract user from request
+│   ├── auth.service.ts            # Auth business logic
+│   └── auth.controller.ts         # Auth endpoints
+│
+├── wallet/                         # Wallet module
+│   ├── dto/
+│   │   ├── create-wallet.dto.ts   # Wallet creation validation
+│   │   ├── fund-wallet.dto.ts     # Funding validation
+│   │   ├── transfer.dto.ts        # Transfer validation
+│   │   └── withdraw.dto.ts        # Withdrawal validation
+│   ├── wallet.service.ts          # Wallet business logic
+│   └── wallet.controller.ts       # Wallet endpoints
+│
+├── entities/                       # Database entities
+│   ├── user.entity.ts             # User model
+│   ├── wallet.entity.ts           # Wallet model
+│   └── transaction.entity.ts      # Transaction model
+│
+├── common/                         # Shared resources
+│   ├── guards/                    # Global guards
+│   ├── filters/                   # Exception filters
+│   └── decorators/                # Global decorators
+│
+└── main.ts                        # Application entry point
 ```
 
-## Compile and run the project
+### Entity Relationships
 
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+```
+User (1) ──────┐ (M) Wallet (1) ──────┐ (M) Transaction
+               └──────────────────────┘
 ```
 
-## Run tests
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- MySQL (v8.0 or higher)
+- Docker (optional)
+
+### Installation
+
+1. **Clone the repository**
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone <https://github.com/Shurrd/wallet-service.git>
+cd wallet-service
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+2. **Install dependencies**
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+3. **Configure environment variables**
 
-## Resources
+Create a `.env` file in the root directory:
 
-Check out a few resources that may come in handy when working with NestJS:
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=your_password
+DB_NAME=wallet_service
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Application Configuration
+APP_PORT=5050
+NODE_ENV=development
 
-## Support
+# JWT Configuration
+JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production
+JWT_EXPIRATION_TIME=24h
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+4. **Setup database**
 
-## Stay in touch
+Create the database:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```sql
+CREATE DATABASE wallet_service;
+```
 
-## License
+Sync the schema:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+npm run typeorm schema:sync
+```
+
+5. **Run the application**
+
+Development mode:
+
+```bash
+npm run start:dev
+```
+
+Production mode:
+
+```bash
+npm run build
+npm run start:prod
+```
+
+The API will be available at `http://localhost:5050`
+
+## 📚 API Documentation
+
+### Swagger Documentation
+
+Complete API documentation with interactive testing available at:
+
+```
+http://localhost:5050/api
+```
+
+The Swagger UI provides:
+
+- Full endpoint specifications
+- Request/response schemas
+- Authentication testing
+- Live API playground
+
+---
+
+## 🔒 Security
+
+### Authentication Flow
+
+1. User registers/logs in → receives JWT token
+2. Client stores token securely (httpOnly cookie recommended)
+3. Client includes token in Authorization header for protected routes
+4. Server validates token using JWT strategy
+5. Request proceeds if token is valid
+
+### Password Security
+
+- Passwords hashed using bcrypt with 10 salt rounds
+- Plain passwords never stored in database
+- Password comparison done securely using bcrypt.compare()
+
+### Authorization
+
+- Route guards protect all wallet endpoints
+- Users can only access their own wallets
+- Ownership validation on every operation
+
+### Manual Testing with Postman
+
+Import the provided Postman collection from `postman/Wallet-Service.postman_collection.json`
+
+**Test Flow:**
+
+1. Register a new user
+2. Login and save the access token
+3. Create a wallet
+4. Fund the wallet
+5. Create a second wallet
+6. Transfer between wallets
+7. Check transaction history
+
+## 🚀 Deployment
+
+### Environment Variables
+
+Production `.env` file:
+
+```
+
+env
+DB_HOST=your-db-host
+DB_PORT=3306
+DB_USERNAME=your-db-user
+DB_PASSWORD=your-secure-password
+DB_NAME=wallet_service_prod
+APP_PORT=5050
+NODE_ENV=production
+JWT_SECRET_KEY=your-very-secure-random-secret
+JWT_EXPIRATION_TIME=24h
+
+```
+
+## 📈 Production Considerations
+
+### Scalability
+
+1. **Database Optimization**
+   - Add indexes on frequently queried columns
+   - Implement connection pooling
+   - Use read replicas for read-heavy operations
+   - Consider sharding for large-scale deployments
+
+2. **Caching Strategy**
+   - Redis for frequently accessed wallet data
+   - Cache idempotency keys with TTL
+   - Cache user sessions
+
+3. **Monitoring**
+   - Setup APM (Application Performance Monitoring)
+   - Log aggregation with ELK stack
+   - Real-time alerts for errors and performance issues
+   - Track transaction metrics
+
+### High Availability
+
+1. **Database**
+   - Master-slave replication
+   - Automated backups
+   - Point-in-time recovery
+
+2. **Application**
+   - Multi-region deployment
+   - Health checks and auto-scaling
+   - Circuit breakers for external services
+
+3. **Security**
+   - Rate limiting (e.g., 100 requests/minute per user)
+   - DDoS protection
+   - Regular security audits
+   - Automated vulnerability scanning
+
+### Improvements for Production
+
+1. **Implement Refresh Tokens** - Longer sessions without compromising security
+2. **Add Rate Limiting** - Prevent API abuse
+3. **Currency Conversion** - Support cross-currency transfers
+4. **Webhooks** - Notify external systems on transactions
+5. **Admin Dashboard** - Management and monitoring interface
+6. **Audit Logging** - Comprehensive activity tracking
+7. **2FA** - Two-factor authentication for sensitive operations
+8. **Email Notifications** - Transaction alerts
+9. **Scheduled Tasks** - Daily balance reports, cleanup jobs
+10. **GraphQL API** - Alternative to REST for flexible queries
+
+### Common Error Codes
+
+| Code | Status                | Description                                 |
+| ---- | --------------------- | ------------------------------------------- |
+| 200  | OK                    | Request successful                          |
+| 201  | Created               | Resource created                            |
+| 400  | Bad Request           | Invalid input or business logic error       |
+| 401  | Unauthorized          | Missing or invalid JWT token                |
+| 403  | Forbidden             | User doesn't own the resource               |
+| 404  | Not Found             | Wallet or resource not found                |
+| 409  | Conflict              | Duplicate entry (username, idempotency key) |
+| 500  | Internal Server Error | Unexpected server error                     |
+
+**Built with ❤️ using NestJS**
